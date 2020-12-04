@@ -14,14 +14,15 @@
 
 4. Execute initial DB related rss
 
-`CREATE DATABASE RentACar`
+```CREATE DATABASE RentACar
 
-`CREATE TABLE r_cars (`
-    `id INT PRIMARY KEY IDENTITY (1, 1),`
-    `brand NVARCHAR (64) NOT NULL,`
-    `model NVARCHAR (255) NOT NULL,`
-    `year INT NOT NULL`
-`);`
+CREATE TABLE r_cars (`
+    id INT PRIMARY KEY IDENTITY (1, 1),
+    brand NVARCHAR (64) NOT NULL,
+    model NVARCHAR (255) NOT NULL,
+    year INT NOT NULL`
+);
+```
 
 
 
@@ -41,13 +42,15 @@
 
 4. Execute initial DB related rss
 
-`CREATE DATABASE RentACar`
+```
+CREATE DATABASE RentACar
 
-`CREATE TABLE w_cars (`
-    `id INT PRIMARY KEY IDENTITY (1, 1),`
-    `command NVARCHAR (64) NOT NULL,`
-    `payload NVARCHAR (MAX) NOT NULL`
-`);`
+CREATE TABLE w_cars (`
+    id INT PRIMARY KEY IDENTITY (1, 1),
+    command NVARCHAR (64) NOT NULL,
+    payload NVARCHAR (MAX) NOT NULL
+);
+```
 
 
 # RABBITMQ
