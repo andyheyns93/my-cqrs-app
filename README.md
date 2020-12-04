@@ -14,7 +14,8 @@
 
 4. Execute initial DB related rss
 
-```CREATE DATABASE RentACar
+```
+CREATE DATABASE RentACar
 
 CREATE TABLE r_cars (`
     id INT PRIMARY KEY IDENTITY (1, 1),
