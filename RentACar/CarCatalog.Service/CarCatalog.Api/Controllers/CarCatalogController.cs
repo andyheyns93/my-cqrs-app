@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using CarCatalog.Api.Models;
+using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Commands;
 using CarCatalog.Business.Queries;
-using CarCatalog.Core.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -12,11 +12,11 @@ namespace RentACar.Controllers
     [Route("[controller]")]
     public class CarCatalogController : ControllerBase
     {
-        private readonly ICarCatalogService _carCatalogService;
+        private readonly IMediator _mediator;
 
-        public CarCatalogController(ICarCatalogService carService)
+        public CarCatalogController(IMediator mediator)
         {
-            _carCatalogService = carService;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -24,7 +24,7 @@ namespace RentACar.Controllers
         {
             Log.Information("CarController: GetById");
 
-            var data = await _carCatalogService.GetAllAsync<CarDto>();
+            var data = await _mediator.Send(new GetAllCarsQuery());
             return Ok(data);
         }
 
@@ -33,7 +33,7 @@ namespace RentACar.Controllers
         {
             Log.Information("CarController: GetById");
 
-            var data = await _carCatalogService.GetByIdAsync<CarDto>(id);
+            var data = await _mediator.Send(new GetCarByIdQuery(id));
             return data != null ? (IActionResult)Ok(data) : NotFound();
         }
 
@@ -42,7 +42,7 @@ namespace RentACar.Controllers
         {
             Log.Information("CarController: Create");
 
-            var data = await _carCatalogService.CreateAsync(car);
+            var data = await _mediator.Send(new CreateCarCommand(car));
             return CreatedAtAction(nameof(GetById), new { id = car.Id }, car);
         }
     }

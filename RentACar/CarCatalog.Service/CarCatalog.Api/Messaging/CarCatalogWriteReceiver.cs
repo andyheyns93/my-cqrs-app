@@ -1,5 +1,4 @@
-﻿using CarCatalog.Api.Models;
-using CarCatalog.Core.Domain;
+﻿using CarCatalog.Core.Domain;
 using CarCatalog.Core.Interfaces.MessageClients.RabbitMq;
 using CarCatalog.Core.Interfaces.Repositories;
 using CarCatalog.Infrastructure.MessageClients;

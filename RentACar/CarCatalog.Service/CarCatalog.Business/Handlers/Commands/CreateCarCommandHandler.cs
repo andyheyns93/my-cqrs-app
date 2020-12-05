@@ -1,30 +1,35 @@
-﻿using CarCatalog.Business.Commands;
+﻿using AutoMapper;
+using CarCatalog.Api.Contracts.Models;
+using CarCatalog.Business.Commands;
 using CarCatalog.Core.Domain;
-using CarCatalog.Core.Interfaces.Repositories;
-using CarCatalog.Infrastructure.MessageClients;
+using CarCatalog.Core.Services;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CarCatalog.Business.Handlers.Commands
 {
-    public class CreateCarCommandHandler : IRequestHandler<CreateCarCommand, Car>
+    public class CreateCarCommandHandler : IRequestHandler<CreateCarCommand, CarDto>
     {
-        private readonly ICommandCarCatalogRepository _carCatalogRepository;
-        private readonly IMessageClient _messageClient;
+        private readonly IMapper _mapper;
+        private readonly ICarCatalogService _carCatalogService;
+        
 
-        public CreateCarCommandHandler(ICommandCarCatalogRepository carCatalogRepository, IMessageClient messageClient)
+        public CreateCarCommandHandler(IMapper mapper, ICarCatalogService carCatalogService)
         {
-            _carCatalogRepository = carCatalogRepository;
-            _messageClient = messageClient;
+            _mapper = mapper;
+            _carCatalogService = carCatalogService;
         }
 
-        public async Task<Car> Handle(CreateCarCommand command, CancellationToken cancellationToken)
+        public async Task<CarDto> Handle(CreateCarCommand request, CancellationToken cancellationToken)
         {
-            await _carCatalogRepository.CreateCarAsync(nameof(CreateCarCommand), command.Payload);
-            await _messageClient.SendMessage(command.Payload);
+            var car = _mapper.Map<Car>(request.Payload);
 
-            return command.Payload;
+            // VALIDATION
+
+            await _carCatalogService.CreateAsync(request.Name, car);
+
+            return await Task.FromResult(_mapper.Map<CarDto>(request.Payload));
         }
     }
 }

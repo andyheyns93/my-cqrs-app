@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CarCatalog.Api.Models;
+using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Core.Domain;
 
 namespace CarCatalog.Api.Profiles

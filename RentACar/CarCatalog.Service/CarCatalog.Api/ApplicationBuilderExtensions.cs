@@ -12,26 +12,15 @@ namespace RentACar
 {
     public static class ApplicationBuilderExtensions
     {
-        public static void UseFluentValidationExceptionHandler(this IApplicationBuilder app)
+        public static void UseExceptionHandler(this IApplicationBuilder app)
         {
             app.UseExceptionHandler(_ =>
             {
                 _.Run(async context =>
                {
-                   var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
-                   var exception = errorFeature.Error;
-
-                   if(!(exception is ValidationException validationException))
-                   {
-                       throw exception;
-                   }
-
-                   var errors = validationException.Errors.Select(err => new { err.PropertyName, err.ErrorMessage });
-                   var errorText = JsonConvert.SerializeObject(errors);
-
-                   context.Response.StatusCode = 400;
-                   context.Response.ContentType = "application/json";
-                   await context.Response.WriteAsync(errorText, Encoding.UTF8);
+                   context.Response.StatusCode = 500;
+                   context.Response.ContentType = "text/html";
+                   await context.Response.WriteAsync("Internal Server Error", Encoding.UTF8);
                });
             });
         }

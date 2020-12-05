@@ -2,13 +2,17 @@
 
 namespace CarCatalog.Business.Commands.Base
 {
-    public class Command<T> : IPayLoad<T>
+    public abstract class Command<TModel> : ICommand<TModel>
     {
-        public T Payload { get; set; }
+        public TModel Payload { get; set; }
 
-        public Command(T payload)
+        protected Command(TModel payload)
         {
             Payload = payload;
+        }
+        public abstract string Name
+        {
+            get;
         }
     }
 }

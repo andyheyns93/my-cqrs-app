@@ -20,10 +20,9 @@ namespace CarCatalog.Infrastructure.Repositories.Cache
 
         public async Task<Car> GetCarByIdAsync(int id)
         {
-            Car cacheEntry;
             var cacheKey = $"{nameof(GetCarByIdAsync)}_{id}";
 
-            if (!_memoryCache.TryGetValue(cacheKey, out cacheEntry))
+            if (!_memoryCache.TryGetValue(cacheKey, out Car cacheEntry))
             {
                 cacheEntry = await _queryCarCatalogRepository.GetCarByIdAsync(id);
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
@@ -35,10 +34,9 @@ namespace CarCatalog.Infrastructure.Repositories.Cache
 
         public async Task<List<Car>> GetCarsAsync()
         {
-            List<Car> cacheEntry;
             var cacheKey = $"{nameof(GetCarsAsync)}";
 
-            if (!_memoryCache.TryGetValue(cacheKey, out cacheEntry))
+            if (!_memoryCache.TryGetValue(cacheKey, out List<Car> cacheEntry))
             {
                 cacheEntry = await _queryCarCatalogRepository.GetCarsAsync();
                 var cacheEntryOptions = new MemoryCacheEntryOptions()

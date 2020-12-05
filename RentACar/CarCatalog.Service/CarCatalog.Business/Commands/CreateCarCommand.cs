@@ -1,14 +1,15 @@
-﻿using CarCatalog.Business.Commands.Base;
-using CarCatalog.Core.Domain;
-using MediatR;
+﻿using CarCatalog.Api.Contracts.Models;
+using CarCatalog.Business.Commands.Base;
+using CarCatalog.Core.Interfaces.Handlers;
 
 namespace CarCatalog.Business.Commands
 {
-
-    public class CreateCarCommand : Command<Car>, IRequest<Car>
+    public class CreateCarCommand : Command<CarDto>, ICommandRequest<CarDto>
     {
-        public CreateCarCommand(Car payload) : base(payload)
+        public CreateCarCommand(CarDto payload) : base(payload)
         {
         }
+
+        public override string Name => "CreateCarCommand";
     }
 }

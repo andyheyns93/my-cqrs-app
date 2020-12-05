@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using CarCatalog.Business.Commands;
-using CarCatalog.Business.Queries;
-using CarCatalog.Core.Domain;
+﻿using CarCatalog.Core.Domain;
+using CarCatalog.Core.Interfaces.Repositories;
 using CarCatalog.Core.Services;
-using MediatR;
+using CarCatalog.Infrastructure.MessageClients;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,37 +9,37 @@ namespace CarCatalog.Business.Services
 {
     public class CarCatalogService : ICarCatalogService
     {
-        private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
+        private readonly IQueryCarCatalogRepository _queryCarCatalogRepository;
+        private readonly ICommandCarCatalogRepository _commandCarCatalogRepository;
+        private readonly IMessageClient _messageClient;
 
-        public CarCatalogService(IMapper mapper, IMediator mediator)
+        public CarCatalogService(
+            IQueryCarCatalogRepository queryCarCatalogRepository,
+            ICommandCarCatalogRepository commandCarCatalogRepository,
+            IMessageClient messageClient
+        )
         {
-            _mapper = mapper;
-            _mediator = mediator;
+            _queryCarCatalogRepository = queryCarCatalogRepository;
+            _commandCarCatalogRepository = commandCarCatalogRepository;
+            _messageClient = messageClient;
         }
 
-        public async Task<TModel> CreateAsync<TModel>(TModel model)
+        public async Task<Car> CreateAsync(string command, Car model)
         {
-            var car = _mapper.Map<Car>(model);
-            var result = await _mediator.Send(new CreateCarCommand(car));
+            await _commandCarCatalogRepository.CreateCarAsync(command, model);
+            await _messageClient.SendMessage(model);
 
-            return await Task.FromResult(_mapper.Map<TModel>(result));
+            return model;
         }
 
-        public async Task<List<TModel>> GetAllAsync<TModel>()
+        public async Task<List<Car>> GetAllAsync()
         {
-            var query = new GetAllCarsQuery();
-            var results = await _mediator.Send(query);
-
-            return await Task.FromResult(_mapper.Map<List<TModel>>(results));
+            return await _queryCarCatalogRepository.GetCarsAsync();
         }
 
-        public async Task<TModel> GetByIdAsync<TModel>(int id)
+        public async Task<Car> GetByIdAsync(int id)
         {
-            var query = new GetCarByIdQuery(id);
-            var result = await _mediator.Send(query);
-
-            return await Task.FromResult(_mapper.Map<TModel>(result));
+            return await _queryCarCatalogRepository.GetCarByIdAsync(id);
         }
     }
 }

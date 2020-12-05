@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CarCatalog.Api.Contracts\CarCatalog.Api.Contracts.csproj" />
     <ProjectReference Include="..\CarCatalog.Core\CarCatalog.Core.csproj" />
     <ProjectReference Include="..\CarCatalog.Infrastructure\CarCatalog.Infrastructure.csproj" />
   </ItemGroup>

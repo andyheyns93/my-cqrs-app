@@ -1,4 +1,4 @@
-﻿namespace CarCatalog.Api.Models
+﻿namespace CarCatalog.Api.Contracts.Models
 {
     public class CarDto
     {
