@@ -5,6 +5,6 @@ namespace CarCatalog.Core.Interfaces.Repositories
 {
     public interface ISyncCarCatalogRepository
     {
-        Task CreateCarAsync(Car syncObject);
+        Task<bool> CreateCarAsync(Car syncObject);
     }
 }

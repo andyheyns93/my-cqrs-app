@@ -1,10 +1,14 @@
-﻿namespace CarCatalog.Api.Contracts.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CarCatalog.Api.Contracts.Models
 {
-    public class CarDto
+    public class CarDto : Model
     {
-        public int Id { get; set; }
+        [Required]
         public string Brand { get; set; }
+        [Required]
         public string Model { get; set; }
+        [Required]
         public int Year { get; set; }
     }
 }

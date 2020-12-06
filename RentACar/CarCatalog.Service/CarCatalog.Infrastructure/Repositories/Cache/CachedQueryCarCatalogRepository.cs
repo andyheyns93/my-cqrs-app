@@ -18,7 +18,7 @@ namespace CarCatalog.Infrastructure.Repositories.Cache
             _memoryCache = memoryCache;
         }
 
-        public async Task<Car> GetCarByIdAsync(int id)
+        public async Task<Car> GetCarByIdAsync(Guid id)
         {
             var cacheKey = $"{nameof(GetCarByIdAsync)}_{id}";
 

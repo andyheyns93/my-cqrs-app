@@ -6,6 +6,7 @@
         public int Port { get; set; }
 
         public string QueueName { get; set; }
+        public string BrokerName { get; set; }
 
         public string UserName { get; set; }
 

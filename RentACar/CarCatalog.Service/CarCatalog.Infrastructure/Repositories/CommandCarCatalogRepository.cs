@@ -16,16 +16,18 @@ namespace CarCatalog.Infrastructure.Repositories
             _dbClient = dbClient;
         }
 
-        public async Task CreateCarAsync(string command, Car payload)
+        public async Task<bool> CreateCarAsync(string command, Car payload)
         {
             using (var connection = _dbClient.GetConnection())
             {
-                var query = "INSERT INTO [dbo].[w_cars]([command], [payload]) VALUES (@Command, @Payload)";
+                var query = "INSERT INTO [dbo].[W_Cars]([AggregateId], [Command], [Payload]) VALUES (@AggregateId, @Command, @Payload)";
                 var result = await connection.ExecuteAsync(query, new
                 {
+                    AggregateId = payload.Id,
                     Command = command,
                     Payload = JsonConvert.SerializeObject(payload)
                 });
+                return result > 0;
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CarCatalog.Business.Queries;
 using CarCatalog.Core.Domain;
-using CarCatalog.Core.Services;
+using CarCatalog.Core.Interfaces.Repositories;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,18 +11,18 @@ namespace CarCatalog.Business.Handlers.Queries
     public class GetCarByIdQueryHandler : MediatRHandler, IRequestHandler<GetCarByIdQuery, Car>
     {
         private readonly IMapper _mapper;
-        private readonly ICarCatalogService _carCatalogService;
+        private readonly IQueryCarCatalogRepository _queryCarCatalogRepository;
 
-        public GetCarByIdQueryHandler(IMapper mapper, ICarCatalogService carCatalogService)
+        public GetCarByIdQueryHandler(IMapper mapper, IQueryCarCatalogRepository queryCarCatalogRepository)
         {
             _mapper = mapper;
-            _carCatalogService = carCatalogService;
+            _queryCarCatalogRepository = queryCarCatalogRepository;
         }
 
         public async Task<Car> Handle(GetCarByIdQuery request, CancellationToken cancellationToken)
         {
-            var car = await _carCatalogService.GetByIdAsync(request.Id);
-            return await Task.FromResult(_mapper.Map<Car>(car));
+            var domainObject = await _queryCarCatalogRepository.GetCarByIdAsync(request.Id);
+            return await Task.FromResult(_mapper.Map<Car>(domainObject));
         }
     }
 }

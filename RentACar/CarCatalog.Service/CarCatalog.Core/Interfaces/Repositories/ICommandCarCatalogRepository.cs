@@ -5,6 +5,6 @@ namespace CarCatalog.Core.Interfaces.Repositories
 {
     public interface ICommandCarCatalogRepository
     {
-        Task CreateCarAsync(string command, Car payload);
+        Task<bool> CreateCarAsync(string command, Car payload);
     }
 }

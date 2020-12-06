@@ -15,12 +15,13 @@ namespace CarCatalog.Infrastructure.Repositories.Sync
             _dbClient = dbClient;
         }
 
-        public async Task CreateCarAsync(Car syncObject)
+        public async Task<bool> CreateCarAsync(Car syncObject)
         {
             using (var connection = _dbClient.GetConnection())
             {
-                var query = "INSERT INTO [dbo].[r_cars]([brand], [model], [year]) VALUES (@Brand, @Model, @Year)";
-                var result = await connection.ExecuteAsync(query, new { syncObject.Brand, syncObject.Model, syncObject.Year });
+                var query = "INSERT INTO [dbo].[R_Cars]([AggregateId],[Brand], [Model], [Year]) VALUES (@AggregateId, @Brand, @Model, @Year)";
+                var result = await connection.ExecuteAsync(query, new { AggregateId = syncObject.Id, syncObject.Brand, syncObject.Model, syncObject.Year });
+                return result > 0;
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Commands;
 using CarCatalog.Business.Queries;
@@ -29,7 +30,7 @@ namespace RentACar.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             Log.Information("CarController: GetById");
 
@@ -42,8 +43,8 @@ namespace RentACar.Controllers
         {
             Log.Information("CarController: Create");
 
-            var data = await _mediator.Send(new CreateCarCommand(car));
-            return CreatedAtAction(nameof(GetById), new { id = car.Id }, car);
+            var commandResult = await _mediator.Send(new CreateCarCommand(car));
+            return CreatedAtAction(nameof(GetById), new { id = commandResult.Id }, commandResult.Data);
         }
     }
 }

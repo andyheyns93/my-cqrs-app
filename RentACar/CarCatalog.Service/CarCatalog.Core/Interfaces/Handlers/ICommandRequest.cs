@@ -2,7 +2,7 @@
 
 namespace CarCatalog.Core.Interfaces.Handlers
 {
-    public interface ICommandRequest<T> : IRequest<T>
+    public interface ICommandRequest<T, R> : IRequest<R>
     {
     }
 }

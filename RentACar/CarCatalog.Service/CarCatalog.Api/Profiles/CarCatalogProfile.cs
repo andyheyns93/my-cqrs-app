@@ -8,7 +8,7 @@ namespace CarCatalog.Api.Profiles
     {
         public CarCatalogProfile()
         {
-            CreateMap<Car, CarDto>().ReverseMap();
+            CreateMap<CarDto, Car>().ReverseMap();
         }
     }
 }
