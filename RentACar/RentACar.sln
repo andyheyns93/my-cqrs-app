@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCatalog.Business", "CarC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCatalog.Core", "CarCatalog.Service\CarCatalog.Core\CarCatalog.Core.csproj", "{765DC446-9D70-4E80-9374-4A6C63B94AB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarCatalog.Api.Contracts", "CarCatalog.Service\CarCatalog.Api.Contracts\CarCatalog.Api.Contracts.csproj", "{15D89502-15E7-4D25-8166-0774B440CF82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarCatalog.Api.Contracts", "CarCatalog.Service\CarCatalog.Api.Contracts\CarCatalog.Api.Contracts.csproj", "{15D89502-15E7-4D25-8166-0774B440CF82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

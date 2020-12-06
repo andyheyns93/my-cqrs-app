@@ -39,7 +39,7 @@ namespace RentACar.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CarDto car)
+        public async Task<IActionResult> Create([FromBody] CarModel car)
         {
             Log.Information("CarController: Create");
 

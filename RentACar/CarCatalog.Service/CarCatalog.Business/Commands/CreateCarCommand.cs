@@ -5,9 +5,9 @@ using CarCatalog.Business.Commands.Results;
 
 namespace CarCatalog.Business.Commands
 {
-    public class CreateCarCommand : Command<CarDto>, ICommandRequest<CarDto, CreateCommandResult<CarDto>>
+    public class CreateCarCommand : Command<CarModel>, ICommandRequest<CarModel, CreateCommandResult<CarModel>>
     {
-        public CreateCarCommand(CarDto payload) : base(payload)
+        public CreateCarCommand(CarModel payload) : base(payload)
         {
         }
         public override string Name => "CreateCarCommand";

@@ -1,11 +1,12 @@
-﻿using CarCatalog.Business.Queries.Base;
+﻿using CarCatalog.Api.Contracts.Models;
+using CarCatalog.Business.Queries.Base;
 using CarCatalog.Core.Domain;
 using CarCatalog.Core.Interfaces.Handlers;
 using System;
 
 namespace CarCatalog.Business.Queries
 {
-    public class GetCarByIdQuery : Query, IQueryRequest<Car>
+    public class GetCarByIdQuery : Query, IQueryRequest<CarModel>
     {
         public GetCarByIdQuery(Guid id)
         {

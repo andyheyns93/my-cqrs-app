@@ -13,7 +13,7 @@ namespace CarCatalog.Business.Commands.Results
 
         public CreateCommandResult(T model, bool success)
         {
-            Id = model.Id;
+            Id = model.Id.GetValueOrDefault();
             Data = model;
             Success = success;
         }

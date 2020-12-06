@@ -1,10 +1,13 @@
-﻿using CarCatalog.Api.Contracts.Interfaces;
+﻿using CarCatalog.Api.Contracts.Attributes;
+using CarCatalog.Api.Contracts.Interfaces;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarCatalog.Api.Contracts.Models
 {
     public class Model : IModel
     {
-        public Guid Id { get; set; }
+        [NotEmptyGuid]
+        public Guid? Id { get; set; }
     }
 }

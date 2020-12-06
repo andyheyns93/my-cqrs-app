@@ -12,7 +12,7 @@ using CarCatalog.Business.Commands.Results;
 
 namespace CarCatalog.Business.Handlers.Commands
 {
-    public class CreateCarCommandHandler : MediatRHandler, IRequestHandler<CreateCarCommand, CreateCommandResult<CarDto>>
+    public class CreateCarCommandHandler : MediatRHandler, IRequestHandler<CreateCarCommand, CreateCommandResult<CarModel>>
     {
         private readonly IMapper _mapper;
         private readonly ICommandCarCatalogRepository _commandCarCatalogRepository;
@@ -25,7 +25,7 @@ namespace CarCatalog.Business.Handlers.Commands
             _eventBus = eventBus;
         }
 
-        public async Task<CreateCommandResult<CarDto>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
+        public async Task<CreateCommandResult<CarModel>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
         {
             var domainObj = _mapper.Map<Car>(request.Payload);
 
@@ -42,8 +42,8 @@ namespace CarCatalog.Business.Handlers.Commands
                 await _eventBus.Publish(createCarEvent);
             }
 
-            var newDtoObject = _mapper.Map<CarDto>(newDomainObj);
-            return await Task.FromResult(new CreateCommandResult<CarDto>(newDtoObject, success));
+            var newDtoObject = _mapper.Map<CarModel>(newDomainObj);
+            return await Task.FromResult(new CreateCommandResult<CarModel>(newDtoObject, success));
         }
     }
 }
