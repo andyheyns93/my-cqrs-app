@@ -64,3 +64,19 @@ CREATE TABLE W_Cars (
 2. Start the message queue
 
 * `docker start rabbitmq-bus`
+
+
+
+# ElasticSearch - Kibana
+
+1. Setup the message queue
+
+* `kubectl create namespace logging`
+
+2. Deploy 'ElasticSearch' to kubernetes cluster
+
+* `kubectl apply -f kubernetes/elastic.yml -n logging`
+
+3. Deploy 'Kibana' to kubernetes cluster
+
+* `kubectl apply -f kubernetes/kibana.yml -n logging `
