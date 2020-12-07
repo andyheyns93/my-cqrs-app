@@ -16,8 +16,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
+using RentACar.Health;
 using Serilog;
 
 namespace RentACar
@@ -64,6 +66,9 @@ namespace RentACar
             });
 
             services.AddMediatR(typeof(MediatRHandler).Assembly);
+            services.AddHealthChecks()
+                .AddSqlServerQueryHealthCheck(Configuration["ConnectionStrings:QueryConnection"], HealthStatus.Unhealthy)
+                .AddSqlServerCommandHealthCheck(Configuration["ConnectionStrings:CommandConnection"], HealthStatus.Unhealthy);
         }
 
         //services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
@@ -87,6 +92,7 @@ namespace RentACar
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapDefaultHealthChecks();
                 endpoints.MapControllers();
             });
 
