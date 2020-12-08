@@ -1,7 +1,7 @@
 ﻿using CarCatalog.Core.Domain;
 using MediatR;
 
-namespace CarCatalog.Business.Queries.Event
+namespace CarCatalog.Core.Event
 {
     public class CreateCarEvent : Base.Event, IRequest<Unit>
     {

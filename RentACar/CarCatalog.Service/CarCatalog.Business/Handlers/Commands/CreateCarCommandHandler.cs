@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Commands;
-using CarCatalog.Business.Queries.Event;
 using CarCatalog.Core.Domain;
 using CarCatalog.Core.Interfaces.EventBus;
 using CarCatalog.Core.Interfaces.Repositories;
@@ -9,6 +8,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using CarCatalog.Business.Commands.Results;
+using CarCatalog.Core.Event;
 
 namespace CarCatalog.Business.Handlers.Commands
 {
@@ -16,13 +16,13 @@ namespace CarCatalog.Business.Handlers.Commands
     {
         private readonly IMapper _mapper;
         private readonly ICommandCarCatalogRepository _commandCarCatalogRepository;
-        private readonly IEventBus _eventBus;
+        private readonly IEventBusPublisher _eventBusPublisher;
 
-        public CreateCarCommandHandler(IMapper mapper, IEventBus eventBus, ICommandCarCatalogRepository commandCarCatalogRepository)
+        public CreateCarCommandHandler(IMapper mapper, IEventBusPublisher eventBusPublisher, ICommandCarCatalogRepository commandCarCatalogRepository)
         {
             _mapper = mapper;
             _commandCarCatalogRepository = commandCarCatalogRepository;
-            _eventBus = eventBus;
+            _eventBusPublisher = eventBusPublisher;
         }
 
         public async Task<CreateCommandResult<CarModel>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ namespace CarCatalog.Business.Handlers.Commands
             if (success)
             {
                 var createCarEvent = new CreateCarEvent(newDomainObj);
-                await _eventBus.Publish(createCarEvent);
+                await _eventBusPublisher.Publish(createCarEvent);
             }
 
             var newDtoObject = _mapper.Map<CarModel>(newDomainObj);

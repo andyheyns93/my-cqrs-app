@@ -1,4 +1,5 @@
 using AutoMapper;
+using CarCatalog.Api.MessagingIEventBusMessage;
 using CarCatalog.Api.Profiles;
 using CarCatalog.Business.Handlers;
 using CarCatalog.Core.Configuration;
@@ -36,6 +37,8 @@ namespace RentACar
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
+
             services.AddControllers();
 
             services.AddSingleton(Log.Logger);
@@ -44,14 +47,9 @@ namespace RentACar
             services.AddSingleton<IQueryDbClient>(options => new QueryDbClient(Configuration["ConnectionStrings:QueryConnection"]));
             services.AddSingleton<ICommandDbClient>(options => new CommandDbClient(Configuration["ConnectionStrings:CommandConnection"]));
 
-            services.AddSingleton<IRabbitMqClient<IModel>>(options =>
-            {
-                return new RabbitMqClient(options.GetService<ILogger>(), GetRabbitMqConfiguration());
-            });
-            services.AddSingleton<IEventBus>(options =>
-            {
-                return new RabbitMqEventBus(options.GetService<IMediator>(), options.GetService<IRabbitMqClient<IModel>>(), GetRabbitMqConfiguration());
-            });
+            services.AddSingleton<IRabbitMqClient, RabbitMqClient>();
+            services.AddSingleton<IEventBusPublisher, RabbitMqEventBusPublisher>();
+            services.AddSingleton<IEventBusSubscriber, RabbitMqEventBusSubscriber>();
 
             services.AddSingleton<IQueryCarCatalogRepository, QueryCarCatalogRepository>();
             services.AddSingleton<ICommandCarCatalogRepository, CommandCarCatalogRepository>();
@@ -65,14 +63,13 @@ namespace RentACar
                 return mapperConfig.CreateMapper();
             });
 
-            services.AddMediatR(typeof(MediatRHandler).Assembly);
+            services.AddMediatR(typeof(MediatRHandler).Assembly, typeof(Startup).Assembly);
             services.AddHealthChecks()
                 .AddSqlServerQueryHealthCheck(Configuration["ConnectionStrings:QueryConnection"], HealthStatus.Unhealthy)
                 .AddSqlServerCommandHealthCheck(Configuration["ConnectionStrings:CommandConnection"], HealthStatus.Unhealthy);
-        }
 
-        //services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
-        private RabbitMqConfiguration GetRabbitMqConfiguration() => Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            services.AddHostedService<MessageBrokerWorker>();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -96,14 +93,6 @@ namespace RentACar
                 endpoints.MapControllers();
             });
 
-            ConfigureEventBus(app);
-        }
-
-        private void ConfigureEventBus(IApplicationBuilder app)
-        {
-            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-
-            eventBus.Subscribe<CarCatalog.Business.Queries.Event.CreateCarEvent>();
         }
     }
 }

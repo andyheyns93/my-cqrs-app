@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CarCatalog.Core.Interfaces.Event
 {
-    public interface IEvent
+    public interface IEventBusMessage
     {
         Guid Id { get; set; }
         string Name { get; set; }

@@ -1,11 +1,10 @@
 ﻿using RabbitMQ.Client;
+using System.Threading.Tasks;
 
 namespace CarCatalog.Core.Interfaces.Messaging.RabbitMq
 {
-    public interface IRabbitMqClient<T>
+    public interface IRabbitMqClient
     {
-        bool IsConnected { get; }
-        bool TryConnect();
-        T CreateModel();
+        Task<IModel> CreateModel();
     }
 }

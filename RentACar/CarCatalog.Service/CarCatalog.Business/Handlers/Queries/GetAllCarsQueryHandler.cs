@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Queries;
-using CarCatalog.Core.Domain;
 using CarCatalog.Core.Interfaces.Repositories;
 using MediatR;
 using System.Collections.Generic;

@@ -1,11 +1,11 @@
 ﻿using CarCatalog.Core.Interfaces.Event;
 using System;
 
-namespace CarCatalog.Business.Queries.Event.Base
+namespace CarCatalog.Core.Event.Base
 {
-    public class Event : IEvent
+    public abstract class Event : IEventBusMessage
     {
-        public Event()
+        protected Event()
         {
             Id = Guid.NewGuid();
             OccurredOn = DateTime.Now;

@@ -1,5 +1,5 @@
 ﻿using CarCatalog.Business.Handlers;
-using CarCatalog.Business.Queries.Event;
+using CarCatalog.Core.Event;
 using CarCatalog.Core.Interfaces.Repositories;
 using MediatR;
 using System.Threading;
