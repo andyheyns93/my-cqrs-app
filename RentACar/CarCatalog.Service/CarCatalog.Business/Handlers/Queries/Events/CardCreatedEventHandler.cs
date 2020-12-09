@@ -5,7 +5,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CarCatalog.Business.Queries.EventHandler
+namespace CarCatalog.Business.Queries.Events
 {
     public class CardCreatedEventHandler : MediatRHandler, IRequestHandler<CreateCarEvent, Unit>
     {

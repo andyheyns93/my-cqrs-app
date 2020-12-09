@@ -7,12 +7,14 @@ using CarCatalog.Core.Interfaces.Repositories;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using CarCatalog.Business.Commands.Results;
 using CarCatalog.Core.Event;
+using CarCatalog.Business.Commands.Base;
+using CarCatalog.Core.Interfaces.Commands.Results;
+using Serilog;
 
 namespace CarCatalog.Business.Handlers.Commands
 {
-    public class CreateCarCommandHandler : MediatRHandler, IRequestHandler<CreateCarCommand, CreateCommandResult<CarModel>>
+    public class CreateCarCommandHandler : MediatRHandler, IRequestHandler<CreateCarCommand, ICommandResult<CarModel>>
     {
         private readonly IMapper _mapper;
         private readonly ICommandCarCatalogRepository _commandCarCatalogRepository;
@@ -25,7 +27,7 @@ namespace CarCatalog.Business.Handlers.Commands
             _eventBusPublisher = eventBusPublisher;
         }
 
-        public async Task<CreateCommandResult<CarModel>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
+        public async Task<ICommandResult<CarModel>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
         {
             var domainObj = _mapper.Map<Car>(request.Payload);
 
@@ -38,12 +40,14 @@ namespace CarCatalog.Business.Handlers.Commands
 
             if (success)
             {
+                Log.Information("CreateCarCommand - successfully created");
                 var createCarEvent = new CreateCarEvent(newDomainObj);
                 await _eventBusPublisher.Publish(createCarEvent);
-            }
+            }else
+                Log.Error("CreateCarCommand - unsuccessful");
 
             var newDtoObject = _mapper.Map<CarModel>(newDomainObj);
-            return await Task.FromResult(new CreateCommandResult<CarModel>(newDtoObject, success));
+            return await Task.FromResult(new CommandResult<CarModel>(newDtoObject, success));
         }
     }
 }

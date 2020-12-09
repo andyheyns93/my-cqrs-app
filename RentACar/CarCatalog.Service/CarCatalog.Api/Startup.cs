@@ -66,7 +66,8 @@ namespace RentACar
             services.AddMediatR(typeof(MediatRHandler).Assembly, typeof(Startup).Assembly);
             services.AddHealthChecks()
                 .AddSqlServerQueryHealthCheck(Configuration["ConnectionStrings:QueryConnection"], HealthStatus.Unhealthy)
-                .AddSqlServerCommandHealthCheck(Configuration["ConnectionStrings:CommandConnection"], HealthStatus.Unhealthy);
+                .AddSqlServerCommandHealthCheck(Configuration["ConnectionStrings:CommandConnection"], HealthStatus.Unhealthy)
+                .AddRabbitMqHealthCheck(Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>(), HealthStatus.Unhealthy);
 
             services.AddHostedService<MessageBrokerWorker>();
         }

@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace RentACar.Health.Custom
+namespace RentACar.Health.Custom.SqlServer
 {
     public class SqlServerQueryHealthCheck : SqlServerHealthCheck
     {

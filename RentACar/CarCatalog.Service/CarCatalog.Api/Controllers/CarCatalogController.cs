@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CarCatalog.Api.Contracts.Models;
+using CarCatalog.Api.Controllers.Base;
 using CarCatalog.Business.Commands;
 using CarCatalog.Business.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using Serilog.Context;
 
 namespace RentACar.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CarCatalogController : ControllerBase
+    public class CarCatalogController : BaseController
     {
         private readonly IMediator _mediator;
 
@@ -21,30 +23,29 @@ namespace RentACar.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> Get()
         {
             Log.Information("CarController: GetById");
 
-            var data = await _mediator.Send(new GetAllCarsQuery());
-            return Ok(data);
+            return await ExecuteAsync(() => _mediator.Send(new GetAllCarsQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             Log.Information("CarController: GetById");
+            using var scope = LogContext.PushProperty("RentACar.RequestId", id);
 
-            var data = await _mediator.Send(new GetCarByIdQuery(id));
-            return data != null ? (IActionResult)Ok(data) : NotFound();
+            return await ExecuteAsync(() => _mediator.Send(new GetCarByIdQuery(id)));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CarModel car)
         {
             Log.Information("CarController: Create");
+            using var scope = LogContext.PushProperty("RentACar.RequestBody", car);
 
-            var commandResult = await _mediator.Send(new CreateCarCommand(car));
-            return CreatedAtAction(nameof(GetById), new { id = commandResult.Id }, commandResult.Data);
+            return await ExecuteAsync(() => _mediator.Send(new CreateCarCommand(car)));
         }
     }
 }

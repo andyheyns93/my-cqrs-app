@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CarCatalog.Core.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using RentACar.Health.Custom;
+using RentACar.Health.Custom.RabbitMq;
+using RentACar.Health.Custom.SqlServer;
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +20,12 @@ namespace RentACar.Health
             string connectionString, HealthStatus failureStatus = HealthStatus.Degraded,  IEnumerable<string> tags = default, TimeSpan? timeout = default)
         {
             return builder.AddCheck($"Sql Server (write): ", new SqlServerCommandHealthCheck(connectionString), failureStatus, tags, timeout);
+        }
+
+        public static IHealthChecksBuilder AddRabbitMqHealthCheck(this IHealthChecksBuilder builder,
+           RabbitMqConfiguration rabbitMqConfiguration, HealthStatus failureStatus = HealthStatus.Degraded, IEnumerable<string> tags = default, TimeSpan? timeout = default)
+        {
+            return builder.AddCheck($"RabbitMq: ", new RabbitMqHealthCheck(rabbitMqConfiguration), failureStatus, tags, timeout);
         }
     }
 }

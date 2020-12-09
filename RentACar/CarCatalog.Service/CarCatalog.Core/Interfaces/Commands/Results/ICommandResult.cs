@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CarCatalog.Core.Interfaces.Commands.Results
 {
-    public interface ICommandResult
+    public interface ICommandResult<T>
     {
-        bool Success { get; }
-        DateTime Executed { get; }
+        T Data { get; set; }
+        bool Success { get; set; }
+        DateTime Executed { get; set; }
     }
 }

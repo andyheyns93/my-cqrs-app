@@ -2,6 +2,7 @@
 using CarCatalog.Core.Interfaces.Repositories;
 using CarCatalog.Core.Interfaces.Repositories.Base;
 using Dapper;
+using Serilog;
 using System.Threading.Tasks;
 
 namespace CarCatalog.Infrastructure.Repositories.Sync
@@ -19,6 +20,8 @@ namespace CarCatalog.Infrastructure.Repositories.Sync
         {
             using (var connection = _dbClient.GetConnection())
             {
+                Log.Information($"SYNC - CreateCarAsync with id: {syncObject.Id}");
+
                 var query = "INSERT INTO [dbo].[R_Cars]([AggregateId],[Brand], [Model], [Year]) VALUES (@AggregateId, @Brand, @Model, @Year)";
                 var result = await connection.ExecuteAsync(query, new { AggregateId = syncObject.Id, syncObject.Brand, syncObject.Model, syncObject.Year });
                 return result > 0;

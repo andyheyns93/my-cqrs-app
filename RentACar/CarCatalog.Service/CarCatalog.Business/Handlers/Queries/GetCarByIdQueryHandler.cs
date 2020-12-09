@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Queries;
-using CarCatalog.Core.Domain;
+using CarCatalog.Business.Queries.Base;
+using CarCatalog.Core.Interfaces.Queries.Results;
 using CarCatalog.Core.Interfaces.Repositories;
 using MediatR;
 using System.Threading;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CarCatalog.Business.Handlers.Queries
 {
-    public class GetCarByIdQueryHandler : MediatRHandler, IRequestHandler<GetCarByIdQuery, CarModel>
+    public class GetCarByIdQueryHandler : MediatRHandler, IRequestHandler<GetCarByIdQuery, IQueryResult<CarModel>>
     {
         private readonly IMapper _mapper;
         private readonly IQueryCarCatalogRepository _queryCarCatalogRepository;
@@ -20,10 +21,12 @@ namespace CarCatalog.Business.Handlers.Queries
             _queryCarCatalogRepository = queryCarCatalogRepository;
         }
 
-        public async Task<CarModel> Handle(GetCarByIdQuery request, CancellationToken cancellationToken)
+        public async Task<IQueryResult<CarModel>> Handle(GetCarByIdQuery request, CancellationToken cancellationToken)
         {
             var domainObject = await _queryCarCatalogRepository.GetCarByIdAsync(request.Id);
-            return await Task.FromResult(_mapper.Map<CarModel>(domainObject));
+
+            var model = _mapper.Map<CarModel>(domainObject);
+            return await Task.FromResult(new QueryResult<CarModel>(model));
         }
     }
 }

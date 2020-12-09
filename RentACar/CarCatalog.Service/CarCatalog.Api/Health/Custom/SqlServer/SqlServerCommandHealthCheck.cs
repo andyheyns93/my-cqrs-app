@@ -1,4 +1,4 @@
-﻿namespace RentACar.Health.Custom
+﻿namespace RentACar.Health.Custom.SqlServer
 {
     public class SqlServerCommandHealthCheck : SqlServerHealthCheck
     {

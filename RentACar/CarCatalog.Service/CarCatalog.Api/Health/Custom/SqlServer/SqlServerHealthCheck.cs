@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RentACar.Health.Custom
+namespace RentACar.Health.Custom.SqlServer
 {
     public abstract class SqlServerHealthCheck : IHealthCheck
     {

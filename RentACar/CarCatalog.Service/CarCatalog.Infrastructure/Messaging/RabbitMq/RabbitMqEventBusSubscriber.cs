@@ -8,8 +8,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Serilog;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -38,9 +38,11 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
             consumer.Received += HandleMessage(channel);
 
             channel.BasicConsume(_rabbitMqConfiguration.QueueName, false, consumer);
+
+            Log.Information($"subscribing worker on queue: { _rabbitMqConfiguration.QueueName}");
         }
 
-        private System.EventHandler<BasicDeliverEventArgs> HandleMessage(IModel channel)
+        private EventHandler<BasicDeliverEventArgs> HandleMessage(IModel channel)
         {
             return async (ch, ea) =>
             {
@@ -58,6 +60,8 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
                 Formatting = Formatting.None
             };
             var @event = JsonConvert.DeserializeObject(message, settings) as IEventBusMessage;
+
+            Log.Information($"publishing event message on queue: { _rabbitMqConfiguration.QueueName} with id: {@event.Id}");
             await _mediator.Send(@event);
         }
     }

@@ -1,11 +1,11 @@
 ﻿using CarCatalog.Api.Contracts.Models;
 using CarCatalog.Business.Commands.Base;
+using CarCatalog.Core.Interfaces.Commands.Results;
 using CarCatalog.Core.Interfaces.Handlers;
-using CarCatalog.Business.Commands.Results;
 
 namespace CarCatalog.Business.Commands
 {
-    public class CreateCarCommand : Command<CarModel>, ICommandRequest<CarModel, CreateCommandResult<CarModel>>
+    public class CreateCarCommand : Command<CarModel>, ICommandRequest<CarModel, ICommandResult<CarModel>>
     {
         public CreateCarCommand(CarModel payload) : base(payload)
         {

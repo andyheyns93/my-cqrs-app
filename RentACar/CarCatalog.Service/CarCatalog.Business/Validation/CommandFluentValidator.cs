@@ -1,5 +1,4 @@
-﻿using CarCatalog.Business.Commands;
-using CarCatalog.Business.Commands.Base;
+﻿using CarCatalog.Business.Commands.Base;
 using FluentValidation;
 
 namespace CarCatalog.Business.Validation
