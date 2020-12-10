@@ -26,7 +26,7 @@ namespace RentACar.Health.Custom.SqlServer
             }
             catch (Exception e)
             {
-                return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, exception: e));
+                return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, description: e.Message, exception: e));
             }
         }
     }
