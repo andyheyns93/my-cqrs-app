@@ -9,7 +9,7 @@ namespace CarCatalog.Api.MessagingIEventBusMessage
 {
     public class Worker : BackgroundService, IWorker
     {
-        private int baseDelay = 10000;
+        private int baseDelay = 5000;
         public virtual Task ExecuteAsync() => Task.Run(() => { });
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
