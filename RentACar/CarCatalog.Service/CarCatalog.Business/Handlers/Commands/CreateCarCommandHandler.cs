@@ -40,11 +40,11 @@ namespace CarCatalog.Business.Handlers.Commands
 
             if (success)
             {
-                Log.Information("CreateCarCommand - successfully created");
+                Log.Information("CreateCarCommand successfully created");
                 var createCarEvent = new CreateCarEvent(newDomainObj);
-                await _eventBusPublisher.Publish(createCarEvent);
-            }else
-                Log.Error("CreateCarCommand - unsuccessful");
+                _ = Task.Run(() => _eventBusPublisher.PublishAsync(createCarEvent));
+            } else
+                Log.Error("CreateCarCommand unsuccessful");
 
             var newDtoObject = _mapper.Map<CarModel>(newDomainObj);
             return await Task.FromResult(new CommandResult<CarModel>(newDtoObject, success));

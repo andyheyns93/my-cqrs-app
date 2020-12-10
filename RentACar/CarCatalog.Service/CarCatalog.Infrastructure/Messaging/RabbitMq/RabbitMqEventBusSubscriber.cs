@@ -21,6 +21,8 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
         private readonly IRabbitMqClient _rabbitMqClient;
         private readonly IMediator _mediator;
 
+        private IModel _channel = null;
+
         public RabbitMqEventBusSubscriber(IRabbitMqClient rabbitMqClient, IOptions<RabbitMqConfiguration> rabbitMqConfiguration, IMediator mediator)
         {
             _rabbitMqClient = rabbitMqClient;
@@ -28,15 +30,24 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
             _mediator = mediator;
         }
 
+        private async Task<IModel> CreateChannel()
+        {
+            if (_channel == null)
+                _channel = await _rabbitMqClient.CreateModel();
+            return await Task.FromResult(_channel);
+        }
+
         public async Task Subscribe<T>() where T : IEventBusMessage
         {
-            var channel = await _rabbitMqClient.CreateModel();
+            var channel = await CreateChannel();
 
-            channel.QueueDeclare(queue: _rabbitMqConfiguration.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            var queueDeclareOK = channel.QueueDeclare(queue: _rabbitMqConfiguration.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            if (queueDeclareOK.ConsumerCount == 1) return;
 
             var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += HandleMessage(channel);
-
+            consumer.Received += HandleMessage(_channel);
+            consumer.Shutdown += (o, a)
+                => Log.Information($"Consumer shutdown: { a.ReplyText } on queue: { _rabbitMqConfiguration.QueueName }");
             channel.BasicConsume(_rabbitMqConfiguration.QueueName, false, consumer);
 
             Log.Information($"subscribing worker on queue: { _rabbitMqConfiguration.QueueName}");

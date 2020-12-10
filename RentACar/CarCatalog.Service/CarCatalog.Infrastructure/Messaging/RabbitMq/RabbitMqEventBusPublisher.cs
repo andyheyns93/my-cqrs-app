@@ -1,6 +1,5 @@
 ﻿using CarCatalog.Core.Configuration;
 using CarCatalog.Core.Interfaces.Event;
-using CarCatalog.Core.Interfaces.EventBus;
 using CarCatalog.Core.Interfaces.Messaging.RabbitMq;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CarCatalog.Infrastructure.Messaging.RabbitMq
 {
-    public class RabbitMqEventBusPublisher : IEventBusPublisher
+    public class RabbitMqEventBusPublisher : Publisher
     {
         private readonly RabbitMqConfiguration _rabbitMqConfiguration;
         private readonly IRabbitMqClient _rabbitMqClient;
@@ -22,7 +21,7 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
             _rabbitMqClient = rabbitMqClient;
         }
 
-        public async Task Publish(IEventBusMessage @event)
+        public override async Task ExecuteAsync(IEventBusMessage eventMessage)
         {
             using (var channel = await _rabbitMqClient.CreateModel())
             {
@@ -34,10 +33,10 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
                     Formatting = Formatting.None
                 };
 
-                var json = JsonConvert.SerializeObject(@event, settings);
+                var json = JsonConvert.SerializeObject(eventMessage, settings);
                 var body = Encoding.UTF8.GetBytes(json);
 
-                Log.Information($"publishing event on queue: { _rabbitMqConfiguration.QueueName} with id: {@event.Id}");
+                Log.Information($"publishing event on queue: { _rabbitMqConfiguration.QueueName} with id: {eventMessage.Id}");
                 channel.BasicPublish(exchange: "", routingKey: _rabbitMqConfiguration.QueueName, basicProperties: null, body: body);
             }
         }

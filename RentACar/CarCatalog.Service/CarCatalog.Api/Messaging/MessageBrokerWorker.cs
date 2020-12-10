@@ -1,12 +1,12 @@
 ﻿using CarCatalog.Core.Interfaces.Event;
 using CarCatalog.Core.Interfaces.EventBus;
-using Microsoft.Extensions.Hosting;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace CarCatalog.Api.MessagingIEventBusMessage
 {
-    public class MessageBrokerWorker : BackgroundService
+    public class MessageBrokerWorker : Worker
     {
         private readonly IEventBusSubscriber _eventBusSubscriber;
 
@@ -15,9 +15,16 @@ namespace CarCatalog.Api.MessagingIEventBusMessage
             _eventBusSubscriber = eventBusSubscriber;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public override async Task ExecuteAsync()
         {
+            Log.Information("MessageBrokerWorker executing.");
             await _eventBusSubscriber.Subscribe<IEventBusMessage>();
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            Log.Information("MessageBrokerWorker stopping.");
+            await base.StopAsync(stoppingToken);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace CarCatalog.Infrastructure.Repositories.Cache
             {
                 cacheEntry = await _queryCarCatalogRepository.GetCarByIdAsync(id);
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(5));
                 _memoryCache.Set(cacheKey, cacheEntry, cacheEntryOptions);
             }
             return cacheEntry;
@@ -40,7 +40,7 @@ namespace CarCatalog.Infrastructure.Repositories.Cache
             {
                 cacheEntry = await _queryCarCatalogRepository.GetCarsAsync();
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromSeconds(10));
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(5));
                 _memoryCache.Set(cacheKey, cacheEntry, cacheEntryOptions);
             }
             return cacheEntry;

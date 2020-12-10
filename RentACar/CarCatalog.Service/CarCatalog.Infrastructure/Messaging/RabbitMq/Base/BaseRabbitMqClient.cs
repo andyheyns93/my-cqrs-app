@@ -10,12 +10,10 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq.Base
         private readonly object sync_root = new object();
 
         protected IConnection _connection;
-        protected readonly ILogger _logger;
         protected readonly RabbitMqConfiguration _rabbitMqConfiguration;
 
-        public BaseRabbitMqClient(ILogger logger, IOptions<RabbitMqConfiguration> rabbitMqConfiguration)
+        public BaseRabbitMqClient(IOptions<RabbitMqConfiguration> rabbitMqConfiguration)
         {
-            _logger = logger;
             _rabbitMqConfiguration = rabbitMqConfiguration.Value;
         }
 
@@ -23,18 +21,18 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq.Base
 
         protected bool TryConnect()
         {
-            _logger.Information("RabbitMQ Client is trying to connect");
+            Log.Information("RabbitMQ Client is trying to connect");
             lock (sync_root)
             {
                 _connection = GetConnection();
                 if (IsConnected)
                 {
-                    _logger.Information($"RabbitMQ persistent connection acquired a connection {_connection.Endpoint.HostName} and is subscribed to failure events");
+                    Log.Information($"RabbitMQ persistent connection acquired a connection {_connection.Endpoint.HostName} and is subscribed to failure events");
                     return true;
                 }
                 else
                 {
-                    _logger.Fatal("RabbitMQ connections could not be created and opened");
+                    Log.Fatal("RabbitMQ connections could not be created and opened");
                     return false;
                 }
             }

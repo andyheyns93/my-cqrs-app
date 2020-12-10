@@ -11,7 +11,7 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
 {
     public class RabbitMqClient : BaseRabbitMqClient, IRabbitMqClient
     {
-        public RabbitMqClient(ILogger logger, IOptions<RabbitMqConfiguration> rabbitMqConfiguration) : base(logger, rabbitMqConfiguration)
+        public RabbitMqClient(IOptions<RabbitMqConfiguration> rabbitMqConfiguration) : base(rabbitMqConfiguration)
         {
         }
 
@@ -21,10 +21,8 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
                 TryConnect();
 
             if (!IsConnected)
-            {
-                _logger.Fatal("No RabbitMQ connections are available to perform this action");
                 throw new InvalidOperationException("No RabbitMQ connections are available to perform this action");
-            }
+
             return await Task.FromResult(_connection.CreateModel());
         }
     }

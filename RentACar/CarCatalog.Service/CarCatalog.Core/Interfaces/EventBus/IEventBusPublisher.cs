@@ -5,6 +5,6 @@ namespace CarCatalog.Core.Interfaces.EventBus
 {
     public interface IEventBusPublisher
     {
-        Task Publish(IEventBusMessage @event);
+        Task PublishAsync(IEventBusMessage @event);
     }
 }
