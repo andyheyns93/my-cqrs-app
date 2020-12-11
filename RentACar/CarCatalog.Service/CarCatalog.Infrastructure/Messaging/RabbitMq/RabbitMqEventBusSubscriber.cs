@@ -1,5 +1,4 @@
 ﻿using CarCatalog.Core.Configuration;
-using CarCatalog.Core.Event;
 using CarCatalog.Core.Interfaces.Event;
 using CarCatalog.Core.Interfaces.EventBus;
 using CarCatalog.Core.Interfaces.Messaging.RabbitMq;
@@ -30,13 +29,6 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
             _mediator = mediator;
         }
 
-        private async Task<IModel> CreateChannel()
-        {
-            if (_channel == null)
-                _channel = await _rabbitMqClient.CreateModel();
-            return await Task.FromResult(_channel);
-        }
-
         public async Task Subscribe<T>() where T : IEventBusMessage
         {
             var channel = await CreateChannel();
@@ -46,11 +38,17 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += HandleMessage(_channel);
-            consumer.Shutdown += (o, a)
-                => Log.Information($"Consumer shutdown: { a.ReplyText } on queue: { _rabbitMqConfiguration.QueueName }");
+            consumer.Shutdown += (o, a) => Log.Information($"Consumer shutdown: { a.ReplyText } on queue: { _rabbitMqConfiguration.QueueName }");
             channel.BasicConsume(_rabbitMqConfiguration.QueueName, false, consumer);
 
             Log.Information($"subscribing worker on queue: { _rabbitMqConfiguration.QueueName}");
+        }
+
+        private async Task<IModel> CreateChannel()
+        {
+            if (_channel == null || _channel.IsOpen == false)
+                _channel = await _rabbitMqClient.CreateModel();
+            return await Task.FromResult(_channel);
         }
 
         private EventHandler<BasicDeliverEventArgs> HandleMessage(IModel channel)
