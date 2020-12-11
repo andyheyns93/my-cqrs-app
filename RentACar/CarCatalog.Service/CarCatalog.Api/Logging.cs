@@ -19,8 +19,8 @@ namespace RentACar
 
                loggerConfiguration.ReadFrom.Configuration(configuration, sectionName: "Logging:Serilog")
                     .Enrich.WithProperty("ApplicationName", env.ApplicationName)
-                    .Enrich.WithProperty("EnvironmentName", env.EnvironmentName)
-                    .Enrich.WithExceptionDetails();
+                    .Enrich.WithProperty("EnvironmentName", env.EnvironmentName);
+               //.Enrich.WithExceptionDetails(); // --https://github.com/serilog/serilog/issues/1275 -> causes the high/fast memory consumption problem
 
                if (hostingContext.HostingEnvironment.IsDevelopment())
                    loggerConfiguration.MinimumLevel.Override("RentACar", LogEventLevel.Debug);
