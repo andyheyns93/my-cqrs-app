@@ -27,6 +27,7 @@ namespace CarCatalog.Api.MessagingIEventBusMessage
                 }
                 await Task.Delay(baseDelay, stoppingToken);
             }
+            await Task.CompletedTask;
         }
     }
 }
