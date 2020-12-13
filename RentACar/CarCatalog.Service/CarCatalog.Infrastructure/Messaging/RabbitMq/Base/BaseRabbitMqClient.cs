@@ -49,7 +49,7 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq.Base
         {
             var factory = new ConnectionFactory
             {
-                HostName = _rabbitMqConfiguration.Hostname,
+                HostName = _rabbitMqConfiguration.HostName,
                 Port = _rabbitMqConfiguration.Port,
                 UserName = _rabbitMqConfiguration.UserName,
                 Password = _rabbitMqConfiguration.Password

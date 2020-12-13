@@ -59,7 +59,7 @@ CREATE TABLE W_Cars (
 
 1. Setup the message queue
 
-* `docker run -e RABBITMQ_DEFAULT_USER=rabbitmq -e RABBITMQ_DEFAULT_PASS=xnrep23qeszChXVH -p 15672:15672 -p 5672:5672 --name rabbitmq-bus -h rabbitmq-bus -d rabbitmq:3-management`
+* `docker run -e RABBITMQ_DEFAULT_USER=rabbitmq -e RABBITMQ_DEFAULT_PASS=xnrep23qeszChXVH -p 15672:15672 -p 5672:5672 --name rabbitmq-bus -h rabbitmq-bus -d rabbitmq:3-management` 
 
 2. Start the message queue
 
@@ -79,4 +79,23 @@ CREATE TABLE W_Cars (
 
 3. Deploy 'Kibana' to kubernetes cluster
 
-* `kubectl apply -f kubernetes/kibana.yml -n logging `
+* `kubectl apply -f kubernetes/kibana.yml -n logging`
+
+
+# DOCKER COMPOSE
+
+1. Create a local network
+
+* `docker network create localnet`
+
+2. Run the compose command
+
+* `docker-compose up`
+
+```
+Note:
+'docker-compose.yml' uses 'hostname: rabbitmq' to expose rabbitmq to the car-catalog-api 
+
+by sending an 'ASPNETCORE_ENVIRONMENT=Docker' environment variable to the api container, this container will load the 'appsettings.Docker.json' file.
+This will set the HostName for RabbitMq from 'localhost' to 'rabbitmq' which is specified in the docker-compose.yml file.
+```

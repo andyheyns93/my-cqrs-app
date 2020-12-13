@@ -34,7 +34,7 @@ namespace CarCatalog.Infrastructure.Messaging.RabbitMq
             var channel = await CreateChannel();
 
             var queueDeclareOK = channel.QueueDeclare(queue: _rabbitMqConfiguration.QueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-            if (queueDeclareOK.ConsumerCount == 1) return;
+            if (queueDeclareOK.ConsumerCount == 1) return; // TODO: HANDLE DISPOSING
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += HandleMessage(_channel);

@@ -1,0 +1,35 @@
+# docker network create localnet
+
+version: "3.6"
+services:
+    rabbitmq:
+        container_name: rabbitmq
+        image: rabbitmq:3-management
+        hostname: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        environment:
+            - RABBITMQ_DEFAULT_USER=rabbitmq
+            - RABBITMQ_DEFAULT_PASS=xnrep23qeszChXVH        
+        networks:
+            - localnet
+                
+    car-catalog-api:
+        container_name: car-catalog-api
+        image: andyheyns93/rent-a-car:0.1
+        ports:
+            - 5000:80
+            - 5001:443
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Docker #loads 'appsettings.Docker.json' -> use different hostname for rabbitmq host: 'rabbitmq' instead of 'localhost'
+        restart: on-failure        
+        depends_on:
+            - rabbitmq
+        networks:
+            - localnet
+
+networks:
+  localnet:
+    external:
+      name: localnet

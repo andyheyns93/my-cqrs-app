@@ -1,0 +1,78 @@
+#https://www.youtube.com/watch?v=L9UUUPedidg
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels:
+    app: rent-a-car-app
+    tier: backend
+spec:
+  serviceName: rabbitmq
+  selector:
+    matchLabels:
+      app: rent-a-car-app
+      tier: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rent-a-car-app
+        tier: rabbitmq
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 15672
+            - name: amqp
+              protocol: TCP
+              containerPort: 5672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: rabbitmq
+            - name: RABBITMQ_DEFAULT_PASS
+              value: xnrep23qeszChXVH
+          livenessProbe:
+            exec:
+              command:
+                - "rabbitmq-diagnostics"
+                - "ping"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15
+          readinessProbe:
+            exec:
+              command:
+                - "rabbitmq-diagnostics"
+                - "check_port_connectivity"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15
+
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-load-balancer
+  labels:
+    app: rent-a-car-app
+    tier: rabbitmq
+spec:
+  type: LoadBalancer
+  selector:
+    app: rent-a-car-app
+    tier: rabbitmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: amqp
+      protocol: TCP
+    - port: 15672
+      targetPort: 15672
+      name: http
+      protocol: TCP

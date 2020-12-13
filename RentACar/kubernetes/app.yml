@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-service
+  labels:
+    app: rent-a-car-app
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rent-a-car-app
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: rent-a-car-app
+        tier: backend
+    spec:
+      containers:
+      - name: rent-a-car-app-car-catalog-service-api
+        image: andyheyns93/rent-a-car:0.1
+        #imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rent-a-car-app-car-catalog-service-api-load-balancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: rent-a-car-app
+    tier: backend
+  ports:
+    - port: 5000
+      targetPort: 80

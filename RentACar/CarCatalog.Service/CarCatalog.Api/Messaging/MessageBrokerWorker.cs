@@ -14,10 +14,14 @@ namespace CarCatalog.Api.MessagingIEventBusMessage
         {
             _eventBusSubscriber = eventBusSubscriber;
         }
+        public override async Task StartAsync(CancellationToken stoppingToken)
+        {
+            Log.Information("MessageBrokerWorker starting.");
+            await base.StartAsync(stoppingToken);
+        }
 
         public override async Task ExecuteAsync()
         {
-            Log.Information("MessageBrokerWorker executing.");
             await _eventBusSubscriber.Subscribe<IEventBusMessage>();
         }
 
