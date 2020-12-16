@@ -11,30 +11,41 @@ using CarCatalog.Core.Event;
 using CarCatalog.Business.Commands.Base;
 using CarCatalog.Core.Interfaces.Commands.Results;
 using Serilog;
+using CarCatalog.Business.Validation;
+using System.Linq;
+using System.Collections.Generic;
+using CarCatalog.Core.Common.Validation;
+using CarCatalog.Core.Interfaces.Commands;
+using CarCatalog.Core.Interfaces.Validation;
+using CarCatalog.Business.Validation.Validators;
 
 namespace CarCatalog.Business.Handlers.Commands
 {
-    public class CreateCarCommandHandler : MediatRHandler, IRequestHandler<CreateCarCommand, ICommandResult<CarModel>>
+    public class CreateCarCommandHandler : MediatRCommandHandler, IRequestHandler<CreateCarCommand, ICommandResult<CarModel>>
     {
         private readonly IMapper _mapper;
+        private readonly IValidatorFactory _validatorFactory;
         private readonly ICommandCarCatalogRepository _commandCarCatalogRepository;
         private readonly IEventBusPublisher _eventBusPublisher;
 
-        public CreateCarCommandHandler(IMapper mapper, IEventBusPublisher eventBusPublisher, ICommandCarCatalogRepository commandCarCatalogRepository)
+        public CreateCarCommandHandler(
+            IMapper mapper,
+            IValidatorFactory validatorFactory,
+            IEventBusPublisher eventBusPublisher,
+            ICommandCarCatalogRepository commandCarCatalogRepository)
         {
             _mapper = mapper;
+            _validatorFactory = validatorFactory;
             _commandCarCatalogRepository = commandCarCatalogRepository;
             _eventBusPublisher = eventBusPublisher;
         }
 
         public async Task<ICommandResult<CarModel>> Handle(CreateCarCommand request, CancellationToken cancellationToken)
         {
+            var validator = _validatorFactory.Create<CreateCarCommand, CreateCarCommandValidator>();
+            await ValidateAsync(request, validator);
+
             var domainObj = _mapper.Map<Car>(request.Payload);
-
-            // VALIDATION
-            // TODO
-
-            //SAVE IN WRITE DB
             var newDomainObj = Car.CreateNewCar(domainObj.Brand, domainObj.Model, domainObj.Year);
             var success = await _commandCarCatalogRepository.CreateCarAsync(request.Name, newDomainObj);
 

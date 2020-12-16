@@ -8,16 +8,13 @@
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CarCatalog.Api.Contracts\CarCatalog.Api.Contracts.csproj" />
     <ProjectReference Include="..\CarCatalog.Core\CarCatalog.Core.csproj" />
     <ProjectReference Include="..\CarCatalog.Infrastructure\CarCatalog.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Validation\Base\" />
   </ItemGroup>
 
 </Project>
