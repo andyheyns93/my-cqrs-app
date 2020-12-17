@@ -1,7 +1,100 @@
 # docker network create localnet
 
+# https://kimsereylam.com/docker/2018/10/05/docker-compose-sqlserver.html
+# https://github.com/microsoft/mssql-docker/issues/11
+# https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility?view=sql-server-ver15
+
 version: "3.6"
 services:
+
+    db-read:
+        container_name: db-read
+        image: "mcr.microsoft.com/mssql/server"
+        hostname: db-read
+        environment:
+            - SA_PASSWORD=7FMh-,t^qK=:#})g
+            - ACCEPT_EULA=Y
+            - MSSQL_TCP_PORT=1433
+        ports:
+            - "1433:1433"
+        volumes:
+          # directory with sql script on pc to /scripts/
+          # - ./migrations/read:/scripts
+            - ./migrations/read:/scripts
+            - ./migrations/db:/scripts/db
+        command:
+            - /bin/bash
+            - -c 
+            - |
+              /opt/mssql/bin/sqlservr & sleep 30;
+              /opt/mssql-tools/bin/sqlcmd -U sa -P $${SA_PASSWORD} -S localhost,1433 -d tempdb -l 30 -e -i /scripts/db/create_db.sql
+              for script in /scripts/*.sql
+              do 
+                /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -S localhost,1433 -d RentACar -l 30 -e -i $$script
+              done
+              sleep infinity
+        networks:
+            - localnet
+
+    db-write:
+        container_name: db-write
+        image: "mcr.microsoft.com/mssql/server"
+        hostname: db-write
+        environment:
+            - SA_PASSWORD=7FMh-,t^qK=:#})g
+            - ACCEPT_EULA=Y
+            - MSSQL_TCP_PORT=1435 #IMPORTANT !
+        ports:
+            - "1435:1435"
+        volumes:
+          # directory with sql script on pc to /scripts/
+          # - ./migrations/write:/scripts
+            - ./migrations/write:/scripts
+            - ./migrations/db:/scripts/db
+        command:
+            - /bin/bash
+            - -c 
+            - |
+              /opt/mssql/bin/sqlservr & sleep 30;
+              /opt/mssql-tools/bin/sqlcmd -U sa -P $${SA_PASSWORD} -S localhost,1435 -d tempdb -l 30 -e -i /scripts/db/create_db.sql
+              for script in /scripts/*.sql
+              do 
+                /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -S localhost,1435 -d RentACar -l 30 -e -i $$script
+              done
+              sleep infinity
+        networks:
+            - localnet
+
+    # migration-db-read:
+    #     container_name: migration-db-read
+    #     build:
+    #         context: ./migrations
+    #         dockerfile: read.Dockerfile
+    #     environment:
+    #         SA_USER: "SA"
+    #         SA_PASSWORD: "7FMh-,t^qK=:#})g"
+    #         MSSQL_READ_HOST: "db-read"
+    #         MSSQL_READ_PORT: "1433"
+    #     depends_on:
+    #         - db-read
+    #     networks:
+    #         - localnet
+            
+    # migration-db-write:
+    #     container_name: migration-db-write
+    #     build:
+    #         context: ./migrations
+    #         dockerfile: write.Dockerfile
+    #     environment:
+    #         SA_USER: "SA"
+    #         SA_PASSWORD: "7FMh-,t^qK=:#})g"
+    #         MSSQL_WRITE_HOST: "db-write"
+    #         MSSQL_WRITE_PORT: "1435"
+    #     depends_on:
+    #         - db-write
+    #     networks:
+    #         - localnet
+
     rabbitmq:
         container_name: rabbitmq
         image: rabbitmq:3-management
@@ -11,25 +104,32 @@ services:
             - 15672:15672
         environment:
             - RABBITMQ_DEFAULT_USER=rabbitmq
-            - RABBITMQ_DEFAULT_PASS=xnrep23qeszChXVH        
+            - RABBITMQ_DEFAULT_PASS=xnrep23qeszChXVH
         networks:
             - localnet
-                
+
     car-catalog-api:
+        build:
+            context: .
+            dockerfile: Dockerfile
         container_name: car-catalog-api
-        image: andyheyns93/rent-a-car:0.1
+        # image: andyheyns93/rent-a-car:0.1
         ports:
             - 5000:80
             - 5001:443
         environment:
             - ASPNETCORE_ENVIRONMENT=Docker #loads 'appsettings.Docker.json' -> use different hostname for rabbitmq host: 'rabbitmq' instead of 'localhost'
-        restart: on-failure        
+            - SA_USER=SA
+            - SA_PASSWORD=7FMh-,t^qK=:#})g
+        restart: on-failure
         depends_on:
+            - db-read
+            - db-write
             - rabbitmq
         networks:
             - localnet
 
 networks:
-  localnet:
-    external:
-      name: localnet
+    localnet:
+        external:
+            name: localnet

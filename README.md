@@ -31,7 +31,7 @@ CREATE TABLE R_Cars (
 
 1. Setup the read database 
 
-* `docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=7FMh-,t^qK=:#})g" -p 1434:1433 --name rent-a-car-w-db -h rent-a-car-w-db -d mcr.microsoft.com/mssql/server:2019-latest`
+* `docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=7FMh-,t^qK=:#})g" -p 1435:1433 --name rent-a-car-w-db -h rent-a-car-w-db -d mcr.microsoft.com/mssql/server:2019-latest`
 
 2. Start the read database
 
@@ -39,7 +39,7 @@ CREATE TABLE R_Cars (
 
 3. Test the read database
 
-* `sqlcmd -S localhost,1434 -U SA -P "7FMh-,t^qK=:#})g"`
+* `sqlcmd -S localhost,1435 -U SA -P "7FMh-,t^qK=:#})g"`
 
 4. Execute initial DB related rss
 
@@ -53,7 +53,6 @@ CREATE TABLE W_Cars (
     Payload NVARCHAR (MAX) NOT NULL
 );
 ```
-
 
 # RABBITMQ
 
@@ -98,4 +97,6 @@ Note:
 
 by sending an 'ASPNETCORE_ENVIRONMENT=Docker' environment variable to the api container, this container will load the 'appsettings.Docker.json' file.
 This will set the HostName for RabbitMq from 'localhost' to 'rabbitmq' which is specified in the docker-compose.yml file.
+
+Same goes for the sql server hostnames and ports.
 ```
