@@ -30,6 +30,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using RentACar.Health;
 using Serilog;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace RentACar
 {
@@ -48,7 +51,12 @@ namespace RentACar
             services.Configure<RabbitMqConfiguration>(Configuration.GetSection("RabbitMq"));
 
             services.AddControllers();
-            services.AddMemoryCache();
+            services.AddSwaggerGen(c =>
+            {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
 
             services.AddSingleton(Log.Logger);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -65,11 +73,8 @@ namespace RentACar
 
             services.Decorate<IQueryCarCatalogRepository, CachedQueryCarCatalogRepository>();
 
-            services.AddSingleton(_ =>
-            {
-                var mapperConfig = new MapperConfiguration(mc => mc.AddProfile(new CarCatalogProfile()));
-                return mapperConfig.CreateMapper();
-            });
+            services.AddMemoryCache();
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddMediatR(typeof(MediatRHandler).Assembly, typeof(Startup).Assembly);
             services.AddHealthChecks()
@@ -95,6 +100,13 @@ namespace RentACar
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Catalog Api");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseRouting();
 
