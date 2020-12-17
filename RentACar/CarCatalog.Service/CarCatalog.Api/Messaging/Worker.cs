@@ -16,7 +16,6 @@ namespace CarCatalog.Api.MessagingIEventBusMessage
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                Log.Information($"Worker starting");
                 try
                 {
                     await ExecuteAsync();
