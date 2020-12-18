@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql-server-write
+  labels:
+    app: rent-a-car-app
+    tier: sql-server
+    dbtype: write
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rent-a-car-app
+      tier: sql-server
+      dbtype: write
+  template:
+    metadata:
+      labels:
+        app: rent-a-car-app
+        tier: sql-server 
+        dbtype: write     
+    spec:
+      volumes:
+        - name: local-storage-app-volume
+          persistentVolumeClaim:
+            claimName: local-storage-app-pvc
+        - name: local-storage-temp-volume
+          persistentVolumeClaim:
+            claimName: local-storage-write-temp-pvc
+      containers:
+      - image: mcr.microsoft.com/mssql/server
+        name: db-write
+        args:
+        - /bin/bash
+        - -c
+        - "/opt/mssql/bin/sqlservr & sleep 30;\n/opt/mssql-tools/bin/sqlcmd -U sa
+          -P ${SA_PASSWORD} -S localhost,1435 -d tempdb -l 30 -e -i /scripts/db/create_db.sql\nfor
+          script in /scripts/read/*.sql\ndo \n  /opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD
+          -S localhost,1435 -d RentACar -l 30 -e -i $script\ndone\nsleep infinity\n"
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: MSSQL_TCP_PORT
+          value: "1435"
+        - name: SA_PASSWORD
+          value: 7FMh-,t^qK=:#})g
+        ports:
+        - containerPort: 1435
+        resources:
+          limits:
+            memory: 2G
+            cpu: "1"
+        volumeMounts:
+          - mountPath: /scripts
+            name: local-storage-app-volume
+          - mountPath: /var/opt/mssql/data
+            name: local-storage-temp-volume
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql-server-write-load-balancer
+  labels:
+    app: rent-a-car-app
+    tier: sql-server
+    dbtype: write
+spec:
+  type: LoadBalancer
+  selector:
+    app: rent-a-car-app
+    tier: sql-server
+    dbtype: write
+  ports:
+  - name: "1435"
+    port: 1435
+    targetPort: 1435

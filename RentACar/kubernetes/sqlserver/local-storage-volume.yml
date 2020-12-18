@@ -1,0 +1,46 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage-app-pv
+  labels:
+    type: local-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  capacity:
+    storage: 1Gi
+  persistentVolumeReclaimPolicy: Retain
+  local: #D:\repository\personal\dotnet\MyMicroServiceApp\RentACar\CarCatalog.Service\migrations
+    path: /run/desktop/mnt/host/d/repository/personal/dotnet/MyMicroServiceApp/RentACar/CarCatalog.Service/migrations 
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - docker-desktop
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-storage-app-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 1Gi

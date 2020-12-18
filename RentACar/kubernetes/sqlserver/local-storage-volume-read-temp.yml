@@ -1,0 +1,46 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage-read-temp
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage-read-temp-pv
+  labels:
+    type: local-storage-read-temp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage-read-temp
+  capacity:
+    storage: 1Gi
+  persistentVolumeReclaimPolicy: Retain
+  local: #c:\temp\read-logs
+    path: /run/desktop/mnt/host/c/temp/read-logs
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - docker-desktop
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-storage-read-temp-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage-read-temp
+  resources:
+    requests:
+      storage: 1Gi

@@ -17,16 +17,30 @@ spec:
         app: rent-a-car-app
         tier: backend
     spec:
+      # CURRENTLY NOT WORKING: USE LOCALHOST INTERNAL IP TO FIX COMMUNICATION
+      #hostNetwork: true # connect to localhost instead of internal ip (192.168.0.159)
       containers:
       - name: rent-a-car-app-car-catalog-service-api
         image: andyheyns93/rent-a-car:0.1
-        #imagePullPolicy: Always
         resources:
           limits:
-            memory: "128Mi"
+            memory: "512Mi"
             cpu: "500m"
         ports:
           - containerPort: 80
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Docker
+      - image: alpine
+        name: alpine
+        imagePullPolicy: Always
+        command: ["/bin/sh", "-c"]
+        args:
+          - 'sleep 60m' #apk update; apk add curl;
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
 
 ---
 

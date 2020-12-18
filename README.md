@@ -100,3 +100,36 @@ This will set the HostName for RabbitMq from 'localhost' to 'rabbitmq' which is 
 
 Same goes for the sql server hostnames and ports.
 ```
+
+# KUBERNETES
+
+1. Deploy RabbitMQ 
+
+* `kubectl apply -f .\rabbitmq\rabbitmq.yml`
+
+2. Deploy Sql Server 
+
+``` 
+kubectl apply -f .\sqlserver\local-storage-volume-read-temp.yml
+kubectl apply -f .\sqlserver\local-storage-volume-write-temp.yml
+kubectl apply -f .\sqlserver\local-storage-volume.yml
+kubectl apply -f .\sqlserver\sql-read-server.yml
+kubectl apply -f .\sqlserver\sql-write-server.yml
+```
+
+3. Deploy App 
+
+* `kubectl apply -f .\app.yml`
+
+4. Navigate to ready path
+
+* `http://localhost:5000/health/ready`
+
+```
+Note:
+
+by sending an 'ASPNETCORE_ENVIRONMENT=Docker' environment variable to the api container, this container will load the 'appsettings.Docker.json' file.
+This will set the HostName for RabbitMq from 'localhost' to '198.162.0.159' (INTERNAL IP)
+
+Same goes for the sql server hostnames and ports.
+```
