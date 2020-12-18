@@ -20,7 +20,7 @@ services:
         volumes:
           # directory with sql script on pc to /scripts/
           # - ./migrations/read:/scripts
-            - ./migrations/read:/scripts
+            - ./migrations/read:/scripts/read
             - ./migrations/db:/scripts/db
         command:
             - /bin/bash
@@ -28,7 +28,7 @@ services:
             - |
               /opt/mssql/bin/sqlservr & sleep 30;
               /opt/mssql-tools/bin/sqlcmd -U sa -P $${SA_PASSWORD} -S localhost,1433 -d tempdb -l 30 -e -i /scripts/db/create_db.sql
-              for script in /scripts/*.sql
+              for script in /scripts/read/*.sql
               do 
                 /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -S localhost,1433 -d RentACar -l 30 -e -i $$script
               done
@@ -49,7 +49,7 @@ services:
         volumes:
           # directory with sql script on pc to /scripts/
           # - ./migrations/write:/scripts
-            - ./migrations/write:/scripts
+            - ./migrations/write:/scripts/write
             - ./migrations/db:/scripts/db
         command:
             - /bin/bash
@@ -57,7 +57,7 @@ services:
             - |
               /opt/mssql/bin/sqlservr & sleep 30;
               /opt/mssql-tools/bin/sqlcmd -U sa -P $${SA_PASSWORD} -S localhost,1435 -d tempdb -l 30 -e -i /scripts/db/create_db.sql
-              for script in /scripts/*.sql
+              for script in /scripts/write/*.sql
               do 
                 /opt/mssql-tools/bin/sqlcmd -U sa -P $$SA_PASSWORD -S localhost,1435 -d RentACar -l 30 -e -i $$script
               done
@@ -119,8 +119,6 @@ services:
             - 5001:443
         environment:
             - ASPNETCORE_ENVIRONMENT=Docker #loads 'appsettings.Docker.json' -> use different hostname for rabbitmq host: 'rabbitmq' instead of 'localhost'
-            - SA_USER=SA
-            - SA_PASSWORD=7FMh-,t^qK=:#})g
         restart: on-failure
         depends_on:
             - db-read
